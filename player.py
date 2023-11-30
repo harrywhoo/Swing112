@@ -23,8 +23,10 @@ class Player:
 
         self.omega = None
 
-    def draw(self):
-        drawCircle(self.x, self.y, self.radius, fill = self.color)
+    def draw(self, scrollX):
+        cx = self.x
+        cx -= scrollX
+        drawCircle(cx, self.y, self.radius, fill = self.color)
 
     def distance(self, x, y):
         return ((self.x - x)**2 + (self.y - y)**2)**0.5
@@ -74,7 +76,6 @@ class Player:
 
     def swing(self, pivot, r):
 
-        print('ran')
         dt = 1
         self.omega += self.g*math.cos(self.angle) *dt / r - 0.001*self.omega
         self.angle += self.omega * dt

@@ -5,12 +5,15 @@ class Pivot:
         self.x = x
         self.y = y
         self.r = 5
+        self.originalX = x
         
     def __eq__(self, other):
         return (isinstance(other, Pivot) and 
                 (self.x == other.x) and 
                 (self.y == other.y))
     
-    def draw(self, color = None):
-        drawCircle(self.x, self.y, self.r, fill = color, border = 'black')
+    def draw(self, scrollX, color = None):
+        cx = self.x
+        cx -= scrollX
+        drawCircle(cx, self.y, self.r, fill = color, border = 'black')
 

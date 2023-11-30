@@ -12,15 +12,21 @@ def startGame(app):
     app.height = 720
     app.isSwinging = False
     app.ropeLength = 200
-    app.player = Player(app.width/4 - 100, 100)
+    app.player = Player(app.width/4 + 200, 100)
     app.pivots = []
-    app.pivots.append(Pivot(app.width/4, app.height/2))
     app.pivots.append(Pivot(app.width/2, app.height/2))
     app.pivots.append(Pivot(app.width*3/4, app.height/2))
+    app.pivots.append(Pivot(app.width, app.height/2))
+    app.pivots.append(Pivot(app.width*5/4, app.height/2))
     app.currPivot = None
     app.stepsPerSecond = 60
     app.g = 9.81 / app.stepsPerSecond
     app.startButton = Button(app.width/2 - 100, app.height/2 - 100, 200, 200, 'start')
+
+
+    app.scrollX = 0 
+    app.scrollMargin = 300
+
 
 #--------------------------------- Start ---------------------------------------
 def welcome_redrawAll(app):
@@ -32,14 +38,26 @@ def welcome_onMousePress(app, mouseX, mouseY):
         startGame(app)
 
 #--------------------------------- Game ----------------------------------------
+
 def game_onStep(app):
     if app.player.y - app.player.radius > app.height:
         setActiveScreen('death')
 
     if app.isSwinging:
         app.player.swing(app.currPivot, app.player.ropeLength)
+        makePlayerVisible(app) 
     else: 
         app.player.fall()
+        makePlayerVisible(app) 
+
+def makePlayerVisible(app):
+    # scroll to make player visible as needed
+    if (app.player.x > app.scrollX + app.width - app.scrollMargin):
+        app.scrollX = app.player.x - app.width + app.scrollMargin
+    # if (app.player.x < app.scrollX + app.scrollMargin):
+    #     app.scrollX = app.player.x - app.scrollMargin
+    # if (app.player.x > app.scrollX + app.width - app.scrollMargin):
+    #     app.scrollX = app.player.x - app.width + app.scrollMargin
 
 def game_onKeyPress(app, key):
     if key =='p':
@@ -56,7 +74,7 @@ def game_onKeyPress(app, key):
             temp = app.player.dx * math.sin(angle) + app.player.dy * math.cos(angle)
             app.player.dx = temp * math.sin(angle)
             app.player.dy = temp * math.cos(angle)
-            app.player.omega = temp/app.player.ropeLength         
+            app.player.omega = temp/app.player.ropeLength        
             # angle = app.player.highestAngle(app.currPivot, app.player.ropeLength)
             # app.player.amplitude = abs(math.degrees(angle) - (180 - math.degrees(angle)))/2
             # app.player.minAngle = angle
@@ -76,16 +94,17 @@ def game_onKeyRelease(app, key):
 #         app.player.swing()  
 
 def game_redrawAll(app):
-    app.player.draw()
+    app.player.draw(app.scrollX)
     
+    drawLabel(f'app.scrollX = {app.scrollX}', app.width/2, 40, fill='black')
     for pivot in app.pivots:
         if pivot is app.currPivot and app.isSwinging:
-            pivot.draw('blue')
+            pivot.draw(app.scrollX, 'blue')
         else: 
-            pivot.draw()
+            pivot.draw(app.scrollX)
 
     if app.isSwinging:
-        drawLine(app.player.x, app.player.y, app.currPivot.x, app.currPivot.y)
+        drawLine(app.player.x-app.scrollX, app.player.y, app.currPivot.x - app.scrollX, app.currPivot.y)
 
 #--------------------------------- Pause ---------------------------------------
 def pause_onKeyPress(app, key):
