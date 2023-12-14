@@ -15,8 +15,6 @@ class Spike:
     def collided(self, player):
         if (distance(app.player.x, app.player.y, self.x, self.y) <= 
             app.player.radius + self.r):
-            print(f'player: ({app.player.x, app.player.y})')
-            print(f'spike: ({self.x, self.y})')
             print('spiked')
             return True
 
